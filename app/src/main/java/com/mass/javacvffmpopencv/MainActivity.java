@@ -14,6 +14,7 @@ import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        processvideo3();
+                        processvideo();
                     }
                 }).start();
 
@@ -91,6 +92,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        return super.onTouchEvent(event);
     }
 
     private FFmpegFrameRecorder recorder = null;
@@ -104,10 +112,13 @@ public class MainActivity extends AppCompatActivity {
     };
     private record r;
 
+    /*
+    转录
+     */
     private void processvideo() {
         //初始化
         FrameGrabber videoGrabber = new FFmpegFrameGrabber(Environment.getExternalStorageDirectory()
-                .getAbsolutePath() + "/" + "20120101103537.mp4");
+                .getAbsolutePath() + "/" + "movie2.mp4");
         try {
             videoGrabber.start();
         } catch (FrameGrabber.Exception e) {
@@ -179,6 +190,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * 打开天时通相机
+     **/
     private void rc() {
         final String inputFile = "rtsp://admin:123456@169.254.170.254:554/mpeg4";
         //    final String inputFile = "rtsp://169.254.170.254:554/mpeg4cif";
@@ -204,6 +218,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /*
+    精子检测
+     */
     private void processvideo3() {
         Display display = getWindowManager().getDefaultDisplay();
         Point point = new Point();
@@ -222,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
 
     static OpenCVFrameConverter.ToIplImage matconverter = new OpenCVFrameConverter.ToIplImage();
 
+    //截图
     private void processvideo1() {
 
         TextureView a = null;
