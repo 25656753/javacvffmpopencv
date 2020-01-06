@@ -10,7 +10,6 @@ public class MainObservableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_observable);
-        Toast.makeText(this,"fff",Toast.LENGTH_LONG).show();
-        Toast.makeText(this,"fffaaa",Toast.LENGTH_LONG).show();
+
     }
 }
