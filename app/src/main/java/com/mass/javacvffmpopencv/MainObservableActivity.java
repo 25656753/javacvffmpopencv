@@ -1,15 +1,16 @@
 package com.mass.javacvffmpopencv;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.concurrent.TimeUnit;
+
+import androidx.appcompat.app.AppCompatActivity;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -19,6 +20,7 @@ public class MainObservableActivity extends AppCompatActivity {
 
     private final String TAG = "MainObservableActivity";
     private TextView tv;
+    private Disposable ff;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +43,10 @@ public class MainObservableActivity extends AppCompatActivity {
         }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread());
 
         Observer<Integer> observer=new Observer<Integer>() {
+            private Disposable mDisposable;
             @Override
             public void onSubscribe(Disposable d) {
+                mDisposable=d;
                 Log.d(TAG, "observer========================= currentThread name: " + Thread.currentThread().getName());
             }
 
@@ -50,6 +54,7 @@ public class MainObservableActivity extends AppCompatActivity {
             public void onNext(Integer integer) {
                 tv.setText(integer+"");
                 Log.d(TAG, "======================onNext " + integer);
+
             }
 
             @Override
@@ -64,6 +69,20 @@ public class MainObservableActivity extends AppCompatActivity {
 
 
         };
+
         observable.subscribe(observer);
+
+    ff=    Observable.interval(1, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe((i)->{
+            System.out.println(i);
+            tv.setText(i+"");
+        });
+
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ff.dispose();
     }
 }

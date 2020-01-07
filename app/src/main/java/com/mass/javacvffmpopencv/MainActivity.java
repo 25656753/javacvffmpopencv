@@ -3,30 +3,22 @@ package com.mass.javacvffmpopencv;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Point;
-import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
-import android.widget.MediaController;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
-
-import org.bytedeco.javacpp.opencv_core.Mat;
 
 import org.bytedeco.javacpp.avcodec;
+import org.bytedeco.javacpp.opencv_core.Mat;
 import org.bytedeco.javacv.AndroidFrameConverter;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
@@ -36,6 +28,9 @@ import org.bytedeco.javacv.FrameRecorder;
 import org.bytedeco.javacv.OpenCVFrameConverter;
 
 import java.io.File;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import static org.bytedeco.javacpp.opencv_imgcodecs.imwrite;
 
