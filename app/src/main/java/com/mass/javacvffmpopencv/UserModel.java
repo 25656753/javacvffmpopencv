@@ -15,7 +15,7 @@ public class UserModel extends ViewModel {
         if (user != null) {
             user.age = 15;
             user.name = "name15";
-            mUserLiveData.setValue(user);
+            mUserLiveData.postValue(user);
         }
     }
 }
