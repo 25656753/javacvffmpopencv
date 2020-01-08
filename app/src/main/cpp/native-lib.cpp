@@ -14,7 +14,8 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_mass_javacvffmpopencv_Main3Activity_stringFromJNI(JNIEnv *env, jobject instance,
                                                            jclass t) {
-
-jmethodID  methodif=env->GetMethodID(t,"show","()V");
+jclass  cl=env->FindClass("com/mass/javacvffmpopencv/Main3Activity");
+jmethodID  methodif=env->GetMethodID(cl,"show","()V");
 env->CallVoidMethod(instance,methodif);
+/*    env->ThrowNew(env->FindClass("sun/jvm/hotspot/debugger/DebuggerException"), "eeee");*/
 }
