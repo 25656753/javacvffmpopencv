@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import androidx.appcompat.app.AppCompatActivity;
 import io.reactivex.Observable;
