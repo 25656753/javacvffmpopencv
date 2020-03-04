@@ -189,9 +189,11 @@ public class MainActivity extends AppCompatActivity {
      * 打开天时通相机
      **/
     private void rc() {
+        //天时通rtsp地址
         final String inputFile = "rtsp://admin:123456@169.254.170.254:554/mpeg4";
         //    final String inputFile = "rtsp://169.254.170.254:554/mpeg4cif";
         // Decodes-encodes
+
         final String outputFile = Environment.getExternalStorageDirectory()
                 .getAbsolutePath() + "/recorde.mp4";
         new AsyncTask<Void, Void, Void>() {
@@ -200,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 Display display = getWindowManager().getDefaultDisplay();
                 Point point = new Point();
                 display.getSize(point);
+
                 r = new record(surfaceHolder, point.x);
                 try {
                     r.frameRecord(inputFile, outputFile, 1);
@@ -248,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (FrameGrabber.Exception e) {
             e.printStackTrace();
         }
-//获取视频源的参数
+      //获取视频源的参数
         double frameRate = videoGrabber.getFrameRate();
         int sampleRate = videoGrabber.getSampleRate();
 
