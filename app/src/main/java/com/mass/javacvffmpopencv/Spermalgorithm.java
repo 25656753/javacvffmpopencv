@@ -23,6 +23,8 @@ import org.bytedeco.javacv.OpenCVFrameConverter;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import static org.bytedeco.javacpp.opencv_core.CV_TERMCRIT_EPS;
@@ -62,12 +64,25 @@ Spermalgorithm {
 
     private SurfaceHolder surfaceHolder;
     private int picwidth;
-
+    private float rate = 1f;
+    private float pixrate = 3;  //一像素为3um
+    private float sht = 1;
+    private ArrayList<segdata> finalrs = new ArrayList<>();  //存放精子活跃值
+     private  Double wx=0.0,wh=0.0;
     private AndroidFrameConverter bitmapConverter = new AndroidFrameConverter();
 
-    public Spermalgorithm(SurfaceHolder holder, int width) {
-        surfaceHolder = holder;
-        picwidth = width;
+    /**
+     *
+     * @param holder   视频显示窗口
+     * @param width   视频显示窗口长度
+     * @param pixrate   屏幕象素转长度系数
+     * @param sht        精子活跃度系数
+     */
+    public Spermalgorithm(SurfaceHolder holder, int width,float pixrate,float sht) {
+        this.surfaceHolder = holder;
+        this.picwidth = width;
+        this.pixrate=pixrate;
+        this.sht=sht;
     }
 
     Float thresholdration = 0.98f;
@@ -75,6 +90,12 @@ Spermalgorithm {
     Canvas canvas = null;
     int i = 0;
     boolean p = false;
+
+
+    public ArrayList<segdata> getfinalrs()
+    {
+        return  this.finalrs;
+    }
 
     public boolean mainrun(String videopath) {
 
@@ -97,6 +118,8 @@ Spermalgorithm {
         while (i < 10) {
             try {
                 avframe = videoGrabber.grabFrame();
+                wx=(double)avframe.imageWidth;
+                wh=(double)avframe.imageHeight;
             } catch (FrameGrabber.Exception e) {
                 e.printStackTrace();
                 return runrs;
@@ -172,7 +195,8 @@ Spermalgorithm {
 
 
             Mat t = new Mat();
-            int hei = picwidth * frame.rows() / frame.cols();
+            rate =(float) picwidth /(float) frame.cols();
+            int hei = Math.round(rate * frame.rows());
             resize(frame, t, new Size(picwidth, hei));
 
 
@@ -197,7 +221,7 @@ Spermalgorithm {
 
         calcdist(rsinitPoints, rsPoints, rsdist);
 
-        try {
+      /*  try {
 
             File file = new File(Environment.getExternalStorageDirectory()
                     .getAbsolutePath() + "/sin.txt");
@@ -210,14 +234,46 @@ Spermalgorithm {
 
             fop.write(("总共检测" + rsinitPoints.size() + "次").getBytes());
 
-            fop.write("------------------------------每次时长ms".getBytes());
+            fop.write("------------------------------每次时长ms".getBytes());*/
+            Double tj=wx*wh*9*1e-12;
+            for (int item = 0; item < rsinitPoints.size(); item++) {
+                Double sectime = rstime.get(item) * 0.001;
+                int Sa=0,Sb=0,Sc=0;
+                Vector<Double> tmpvec = rsdist.get(item);
+                for (int k = 0; k < tmpvec.size(); k++) {
+                    Double m = tmpvec.get(k) * rate * pixrate / sectime;  //计算速率 um/s
+                    m*=sht;
+                   if (m>=25)
+                   {
+                       Sa++;
+                   } else if (m>=5)
+                   {
+                     Sb++;
+                   } else
+                   {
+                       Sc++;
+                   }
+                }
+                segdata tmpv=new segdata();
+                tmpv.setSa(Sa);
+                tmpv.setSb(Sb);
+                tmpv.setSc(Sc);
+                tmpv.setBc(rscount.get(item));
+                tmpv.setLc(rs1count.get(item));
 
-            fop.flush();
+                finalrs.add(tmpv);
+                Log.w(TAG, "分析结论：->首帧精子个数："+rscount.get(item)+
+                        "，尾帧精子个数："+rs1count.get(item)+"，活跃数=" +Sa+
+                        "，不活跃数=" +Sb+"，不活动数=" +Sc);
+            }
+
+
+       /*     fop.flush();
             fop.close();
         } catch (Exception e) {
             e.printStackTrace();
 
-        }
+        }*/
         //关闭
         try {
 
@@ -320,13 +376,7 @@ Spermalgorithm {
     }
 
     void drawTrackLines() {
-        Mat tp = new Mat();
-        resize(frame, tp, new Size(frame.cols() * 4, frame.rows() * 4));
-        String filename = Environment.getExternalStorageDirectory()
-                .getAbsolutePath() + "/tt/" + Math.random() + ".jpg";
-        if ((i == 0) && (!p)) {
-            imwrite(filename, tp);
-        }
+
         FloatIndexer fpts0_idx = iniPoints.createIndexer();
         FloatIndexer fpts1_idx = fpts[1].createIndexer();
         for (int t = 0; t < fpts[1].total(); t++) {
@@ -337,13 +387,6 @@ Spermalgorithm {
                     3, Scalar.RED, 1, 8, 0);
 
         }
-        tp = new Mat();
-        resize(frame, tp, new Size(frame.cols() * 4, frame.rows() * 4));
-        filename = Environment.getExternalStorageDirectory()
-                .getAbsolutePath() + "/tt/" + Math.random() + ".jpg";
-        if ((i == 0) && (!p)) {
-            imwrite(filename, tp);
-            p = true;
-        }
+
     }
 }

@@ -1,6 +1,7 @@
 package com.mass.javacvffmpopencv;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -9,13 +10,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
-import android.widget.Toast;
 
 import org.bytedeco.javacpp.avcodec;
 import org.bytedeco.javacpp.opencv_core.Mat;
@@ -28,6 +29,7 @@ import org.bytedeco.javacv.FrameRecorder;
 import org.bytedeco.javacv.OpenCVFrameConverter;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -37,14 +39,29 @@ import static org.bytedeco.javacpp.opencv_imgcodecs.imwrite;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int OVER =328738 ;
+
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
     }
-
+    private    Spermalgorithm pc;
     private SurfaceView mVvPlayback;
     private SurfaceHolder surfaceHolder;
 
+    private Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what==OVER)
+            {
+
+                Intent intent=new Intent(MainActivity.this,RSActivity.class);
+                intent.putParcelableArrayListExtra("data", pc.getfinalrs());
+              startActivity(intent);
+             //   Toast.makeText(MainActivity.this,"over",Toast.LENGTH_LONG).show();
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,13 +88,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
+
         findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        processvideo();
+                        processvideo3();
                     }
                 }).start();
 
@@ -98,13 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
     private FFmpegFrameRecorder recorder = null;
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            Toast.makeText(MainActivity.this, "proc over", Toast.LENGTH_LONG).show();
 
-        }
-    };
     private record r;
 
     /*
@@ -223,9 +236,10 @@ public class MainActivity extends AppCompatActivity {
         Display display = getWindowManager().getDefaultDisplay();
         Point point = new Point();
         display.getSize(point);
-        Spermalgorithm pc = new Spermalgorithm(surfaceHolder, point.x);
+        pc = new Spermalgorithm(surfaceHolder, point.x,3,1);
         pc.mainrun(Environment.getExternalStorageDirectory()
                 .getAbsolutePath() + "/" + "t.mp4");
+       handler.sendEmptyMessage(OVER);
     }
 
     @Override
