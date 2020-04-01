@@ -12,7 +12,8 @@ public class segdata implements Parcelable {
     public String toString() {
         return "分析结论-->首帧精子个数："+Bc+
                 "，尾帧精子个数："+Lc+"，活跃个数=" +Sa+
-                "，不活跃个数=" +Sb+"，不活动个数=" +Sc;
+                "，不活跃个数=" +Sb+"，不活动个数=" +Sc+
+                ",浓度="+Math.round(Md*100)/100+"（百万/毫升）";
     }
 
     public void setSa(Integer sa) {

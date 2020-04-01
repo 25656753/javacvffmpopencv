@@ -4,16 +4,32 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.CalendarContract;
 import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 
 public class mxActivity extends AppCompatActivity {
     private SurfaceView mVvPlayback;
     private SurfaceHolder surfaceHolder;
+    private Button button;
+    private   record   r;
+    private final long shotcomplete=43433333L;
+    private Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what==shotcomplete)
+                Toast.makeText(mxActivity.this,(String)msg.obj,Toast.LENGTH_LONG).show();
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +55,14 @@ public class mxActivity extends AppCompatActivity {
 
             }
         });
+      button=findViewById(R.id.btnshot);
 
+      button.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              r.startshot("/sdcard/");
+          }
+      });
     }
 
 
@@ -57,7 +80,16 @@ public class mxActivity extends AppCompatActivity {
                 Point point = new Point();
                 display.getSize(point);
 
-                record   r = new record(surfaceHolder, point.x);
+                  r = new record(surfaceHolder, point.x);
+                 r.setShot(new record.shotinterface() {
+                    @Override
+                    public void shotcomplete(String filename) {
+                        Message msg=Message.obtain();
+                        msg.what=(int)shotcomplete;
+                        msg.obj=filename;
+                     handler.sendMessage(msg);
+                    }
+                });
                 try {
                     r.frameRecord(inputFile, outputFile, 1);
                 } catch (Exception e) {

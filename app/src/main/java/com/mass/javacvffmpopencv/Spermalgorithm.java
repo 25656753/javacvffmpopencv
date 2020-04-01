@@ -235,8 +235,9 @@ Spermalgorithm {
             fop.write(("总共检测" + rsinitPoints.size() + "次").getBytes());
 
             fop.write("------------------------------每次时长ms".getBytes());*/
-            Double tj=wx*wh*9*1e-12;
-            for (int item = 0; item < rsinitPoints.size(); item++) {
+            Double tj=1920*1080*9*1e-6;
+            ArrayList<segdata> finalrstrmp = new ArrayList<>();
+        for (int item = 0; item < rsinitPoints.size(); item++) {
                 Double sectime = rstime.get(item) * 0.001;
                 int Sa=0,Sb=0,Sc=0;
                 Vector<Double> tmpvec = rsdist.get(item);
@@ -261,13 +262,31 @@ Spermalgorithm {
                 tmpv.setBc(rscount.get(item));
                 tmpv.setLc(rs1count.get(item));
 
-                finalrs.add(tmpv);
+                finalrstrmp.add(tmpv);
                 Log.w(TAG, "分析结论：->首帧精子个数："+rscount.get(item)+
                         "，尾帧精子个数："+rs1count.get(item)+"，活跃数=" +Sa+
                         "，不活跃数=" +Sb+"，不活动数=" +Sc);
             }
+        int tsa=0,tsb=0,tsc=0,tbc=0,tlc=0;
+            for(segdata ss:finalrstrmp)
+            {
+                tsa+=ss.getSa();
+                tsb+=ss.getSb();
+                tsc+=ss.getSc();
+                tbc+=ss.getBc();
+                tlc+=ss.getLc();
+            }
 
-
+        segdata tmpv1=new segdata();
+            tmpv1.setSa(Math.round(tsa/finalrstrmp.size()));
+        tmpv1.setSb(Math.round(tsb/finalrstrmp.size()));
+        tmpv1.setSc(Math.round(tsc/finalrstrmp.size()));
+        tmpv1.setBc(Math.round(tbc/finalrstrmp.size()));
+        tmpv1.setLc(Math.round(tlc/finalrstrmp.size()));
+        Log.i("fffff",Math.round(tbc/finalrstrmp.size())+"----->"+tj);
+        float tmd=(float) (Math.round(tbc/finalrstrmp.size())/tj);
+        tmpv1.setMd(tmd);
+        finalrs.add(tmpv1);
        /*     fop.flush();
             fop.close();
         } catch (Exception e) {
