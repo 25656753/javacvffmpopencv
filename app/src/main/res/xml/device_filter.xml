@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rescources xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--host模式-->
+    <usb-device
+        class=""
+        vendor-id=""
+        product-id=""
+        protoclo=""
+        subclass="" />
+
+    <!--accessory模式-->
+    <usb-accessory
+        model=""
+        manufacturer="" />
+</rescources>
