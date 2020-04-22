@@ -45,17 +45,14 @@ dependencies {
     /*  implementation 'com.android.support:appcompat-v7:28.0.0'*/
     //引入AndroidX吧,替换掉support包
     implementation 'androidx.appcompat:appcompat:1.0.2'
-
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     //  implementation 'com.android.support:appcompat-v7:28.0.0'
-  //  implementation 'com.android.support:appcompat-v7:28.0.0'
+    //  implementation 'com.android.support:appcompat-v7:28.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
     /**
      * 导入javacv  , ffmpeg,opencv
      */
@@ -71,11 +68,10 @@ dependencies {
     /*Rxjava*/
     implementation 'io.reactivex.rxjava2:rxjava:2.2.16'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-
     /*     导入dagger
-     https://blog.csdn.net/hongxue8888/article/details/100725000
-     */
+         https://blog.csdn.net/hongxue8888/article/details/100725000
+         */
     implementation 'com.google.dagger:dagger:2.4'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.4'
-
+    implementation project(':usbSerialForAndroid')
 }

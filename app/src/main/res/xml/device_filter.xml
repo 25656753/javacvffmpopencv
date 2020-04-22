@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rescources xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--host模式-->
-    <usb-device
-        class=""
-        vendor-id=""
-        product-id=""
-        protoclo=""
-        subclass="" />
+<resources>
+    <!-- 0x0403 FTDI -->
+    <usb-device vendor-id="1423" product-id="25479" /> <!-- 0x6001: FT232R -->
 
-    <!--accessory模式-->
-    <usb-accessory
-        model=""
-        manufacturer="" />
-</rescources>
+
+    <!-- 0x10C4 / 0xEAxx: Silabs CP210x -->
+    <usb-device vendor-id="1423" product-id="25479" /> <!-- 0xea60: CP2102 -->
+
+    <!-- 0x067B / 0x2303: Prolific PL2303 -->
+    <usb-device vendor-id="1423" product-id="8963" />
+
+    <!-- 0x1a86 / 0x7523: Qinheng CH340 -->
+    <usb-device vendor-id="1423" product-id="29987" />
+
+    <!-- CDC driver -->
+    <usb-device vendor-id="1423" />                   <!-- 0x2341 / ......: Arduino -->
+    <usb-device vendor-id="1423" product-id="1155" /> <!-- 0x16C0 / 0x0483: Teensyduino  -->
+
+</resources>

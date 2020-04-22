@@ -9,6 +9,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/mylibrary" />
+            <option value="$PROJECT_DIR$/usb-serial-for-android-2.2.2/usbSerialExamples" />
+            <option value="$PROJECT_DIR$/usb-serial-for-android-2.2.2/usbSerialForAndroid" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
