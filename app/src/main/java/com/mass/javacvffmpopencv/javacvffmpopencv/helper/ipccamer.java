@@ -1,12 +1,17 @@
-package com.mass.javacvffmpopencv;
+package com.mass.javacvffmpopencv.javacvffmpopencv.helper;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.SurfaceTexture;
+import android.opengl.GLES20;
+import android.opengl.GLUtils;
 import android.util.Log;
 import android.view.SurfaceHolder;
+
+import com.mass.javacvffmpopencv.CameraGlSurfaceShowActivity;
 
 import org.bytedeco.javacpp.avcodec;
 import org.bytedeco.javacpp.indexer.UByteIndexer;
@@ -17,8 +22,6 @@ import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.OpenCVFrameConverter;
-import org.opencv.core.Core;
-import org.opencv.imgproc.Imgproc;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,59 +31,34 @@ import static org.bytedeco.javacpp.opencv_imgproc.COLOR_RGB2GRAY;
 import static org.bytedeco.javacpp.opencv_imgproc.cvtColor;
 import static org.bytedeco.javacpp.opencv_imgproc.resize;
 
-public class record {
-   private final  String TAG="record";
+public class ipccamer {
+    private static final String TAG = "ipccamer";
+
     private OpenCVFrameConverter.ToIplImage imgeconvert = new OpenCVFrameConverter.ToIplImage();
-    private AndroidFrameConverter bitmapConverter = new AndroidFrameConverter();
+    private static  AndroidFrameConverter bitmapConverter = new AndroidFrameConverter();
     private static final int TIMEOUT = 10; // In seconds.
-    private  boolean isshot=false;
-   private  String filepath="";
+    private boolean isshot = false;
+    private String filepath = "";
+    int picwidth=240;
+    public void setBitmaprecvface(ipccamer.bitmaprecvface bitmaprecvface) {
+        this.bitmaprecvface = bitmaprecvface;
+    }
+
+    private bitmaprecvface bitmaprecvface;
+
+
+
     public void setShot(shotinterface shot) {
         this.shot = shot;
     }
 
-    private  shotinterface  shot;
-    private static enum TimeoutOption {
-        /**
-         * Depends on protocol (FTP, HTTP, RTMP, SMB, SSH, TCP, UDP, or UNIX).
-         * <p>
-         * http://ffmpeg.org/ffmpeg-all.html
-         */
-        TIMEOUT,
-        /**
-         * Protocols
-         * <p>
-         * Maximum time to wait for (network) read/write operations to complete,
-         * in microseconds.
-         * <p>
-         * http://ffmpeg.org/ffmpeg-all.html#Protocols
-         */
-        RW_TIMEOUT,
-        /**
-         * Protocols -> RTSP
-         * <p>
-         * Set socket TCP I/O timeout in microseconds.
-         * <p>
-         * http://ffmpeg.org/ffmpeg-all.html#rtsp
-         */
-        STIMEOUT;
+    private shotinterface shot;
 
-        public String getKey() {
-            return toString().toLowerCase();
-        }
 
+    public ipccamer() {
     }
 
-    Canvas canvas = null;
-    private int picwidth;
-    private SurfaceHolder surfaceHolder;
-
-    public record(SurfaceHolder holder, int width) {
-        surfaceHolder = holder;
-        picwidth = width;
-    }
-
-    public void frameRecord(String inputFile, String outputFile, int audioChannel) throws Exception, org.bytedeco.javacv.FrameRecorder.Exception {
+    public  void frameRecord(String inputFile) throws Exception, org.bytedeco.javacv.FrameRecorder.Exception {
 
         boolean isStart = true;// 该变量建议设置为全局控制变量，用于控制录制结束
         FFmpegFrameGrabber grabber = null;
@@ -118,56 +96,57 @@ public class record {
         try {//建议在线程中使用该方法
             grabber.start();
 
-            opencv_core.Mat tmpmat = new opencv_core.Mat();
-            opencv_core.Mat mat=null;
-            Bitmap bitmap=null;
+            //   opencv_core.Mat tmpmat = new opencv_core.Mat();
+            opencv_core.Mat mat = null;
+            Bitmap bitmap = null;
             while (isStart && (frame = grabber.grabFrame()) != null) {
-                Log.i(TAG,  "接收至frame");
+                Log.i(TAG, "接收至frame--->"+frame+"frame.image---->"+frame.image);
 
-              //  if (frame == null) break;
-             //   if (frame.image == null) continue;
+                 if (frame == null) break;
+                 if (frame.image == null) continue;
 
 
-                try {
-                    mat = imgeconvert.convertToMat(frame);
-                }catch (Exception e){
-                    Log.i(TAG,  "error"+e.getMessage());
+
+
+
+
+             //   if (isshot) {
+                //    shotpic(mat, this.filepath);
+           //     }
+
+                //    int hei = picwidth * mat.rows() / mat.cols();
+                //      resize(mat, tmpmat, new opencv_core.Size(picwidth, hei));
+
+                //     cvtColor(tmpmat, displaymat, COLOR_RGB2GRAY);
+                //      opencv_core.Mat lmat=matswitchColor(displaymat);
+                //     Log.i(TAG,"------------>rows="+lmat.rows()+"  cols="+lmat.cols());
+            try {
+
+                mat=   imgeconvert.convertToMat(frame);
+
+               int hei = picwidth * mat.rows() / mat.cols();
+                resize(mat, mat, new opencv_core.Size(picwidth, hei));
+
+  bitmap = bitmapConverter.convert(imgeconvert.convert(mat));
+
+
+                Log.i(TAG, "bitmapcount="+bitmap.getByteCount());
+                if (bitmaprecvface!=null)
+                {
+
+                    bitmaprecvface.recv(bitmap);
                 }
 
-                Log.i(TAG,  "mat="+mat);
-                    if (mat == null) {
-
-                        continue;
-                    }
-
-
-              if (isshot)
-              {
-                  shotpic(mat,this.filepath);
-              }
-
-                int hei = picwidth * mat.rows() / mat.cols();
-                resize(mat, tmpmat, new opencv_core.Size(picwidth, hei));
-                Log.i(TAG,  "size");
-           //     cvtColor(tmpmat, displaymat, COLOR_RGB2GRAY);
-          //      opencv_core.Mat lmat=matswitchColor(displaymat);
-           //     Log.i(TAG,"------------>rows="+lmat.rows()+"  cols="+lmat.cols());
-                 bitmap = bitmapConverter.convert(imgeconvert.convert(tmpmat));
-
-            //    bitmap = switchColor(bitmap);
+            }
+            catch (Exception e)
+            {
+                Log.i(TAG, "error" + e.getMessage());
+                continue;
+            }
+                //    bitmap = switchColor(bitmap);
                 //  Log.i("fff",bitmap.toString());
-                try {
-                    canvas = surfaceHolder.lockCanvas();
-                    canvas.drawBitmap(bitmap, 0, 0, null);
 
-                } finally {
-                    surfaceHolder.unlockCanvasAndPost(canvas);
 
-                 //   bitmap.recycle();
-                  /*  tmpmat.close();
-                   mat.close();*/
-
-                }
 
             }
 
@@ -177,24 +156,22 @@ public class record {
         }
     }
 
-    public  void startshot(String path)
-    {
-        isshot=true;
-        filepath=path;
+    public void startshot(String path) {
+        isshot = true;
+        filepath = path;
     }
 
-    public void  shotpic(opencv_core.Mat source,String path)
-    {
-        isshot=false;
-        opencv_core.Mat dst=new opencv_core.Mat();
+    public void shotpic(opencv_core.Mat source, String path) {
+        isshot = false;
+        opencv_core.Mat dst = new opencv_core.Mat();
         cvtColor(source, dst, COLOR_RGB2GRAY);
-        opencv_core.Mat math=matswitchColor(dst);
+        opencv_core.Mat math = matswitchColor(dst);
         String strDate = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(new Date());
 
-        String fullfileName = filepath+ "pic_" + strDate + ".jpg";
-        Log.i("time",fullfileName);
-        imwrite(fullfileName,math);
-        if(this.shot!=null){
+        String fullfileName = filepath + "pic_" + strDate + ".jpg";
+        Log.i("time", fullfileName);
+        imwrite(fullfileName, math);
+        if (this.shot != null) {
             this.shot.shotcomplete(fullfileName);
         }
     }
@@ -206,28 +183,27 @@ public class record {
         UByteIndexer srcindexer = source.createIndexer();
 
 
-        Log.i(TAG,"rows="+source.rows()+"  cols="+source.cols());
+        Log.i(TAG, "rows=" + source.rows() + "  cols=" + source.cols());
         try {
             for (int i = 0; i < source.rows() - 1; i++) {
                 for (int j = 0; j < source.cols() - 1; j++) {
-                    int avg = srcindexer.get(i,j);
+                    int avg = srcindexer.get(i, j);
                     if (avg >= 210) {  //亮度：avg>=126
                         //设置颜色
-                        srcindexer.put(i, j,  255);
+                        srcindexer.put(i, j, 255);
 
 
                     } else if (avg < 210 && avg >= 80) {  //avg<126 && avg>=115
                         srcindexer.put(i, j, 108);
 
                     } else {
-                        srcindexer.put(i, j,  0);
+                        srcindexer.put(i, j, 0);
 
                     }
                 }
             }
 
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return source;
@@ -286,10 +262,11 @@ public class record {
         }
     }
 
-    public  interface  shotinterface
-    {
-        public  void shotcomplete(String filename);
+    public interface shotinterface {
+        public void shotcomplete(String filename);
     }
 
-
+public  interface bitmaprecvface{
+        public void recv(Bitmap map);
+}
 }
